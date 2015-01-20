@@ -1,0 +1,21 @@
+pgsql:
+  image: unocha/postgres93
+  environment:
+    DNSDOCK_NAME: pgsql
+    DNSDOCK_IMAGE: hrinfo
+  volumes:
+    - data/hrinfo/pgsql:/var/lib/pgsql/9.3/data
+  hostname: pgsql.hrinfo.vm
+web:
+  image: unocha/apache
+  environment:
+    DNSDOCK_NAME: www
+    DNSDOCK_IMAGE: hrinfo
+  volumes:
+    - ./config/hrinfo/etc/httpd/conf:/etc/httpd/conf
+    - ./config/hrinfo/etc/httpd/conf.d:/etc/httpd/conf.d
+    - ./config/hrinfo/etc/supervisord.d:/etc/supervisord.d
+    - ./code:/var/www/html
+  links:
+    - pgsql:pgsql
+  hostname: www.hrinfo.vm

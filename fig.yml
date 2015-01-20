@@ -1,0 +1,29 @@
+mysql:
+  image: unocha/percona55
+  environment:
+    DNSDOCK_NAME: mysql
+    DNSDOCK_IMAGE: hrinfo
+  volumes:
+    - /data/hrinfo/mysql:/var/lib/mysql
+  hostname: mysql.hrinfo.vm
+pgsql:
+  image: unocha/postgres93
+  environment:
+    DNSDOCK_NAME: pgsql
+    DNSDOCK_IMAGE: hrinfo
+  volumes:
+    - /data/hrinfo/pgsql:/var/lib/pgsql/9.3/data
+  hostname: pgsql.hrinfo.vm
+aegir:
+  image: unocha/aegir
+  environment:
+    DNSDOCK_NAME: aegir
+    DNSDOCK_IMAGE: hrinfo
+  volumes:
+    - /code/hrinfo_aegir/config/hrinfo/etc/httpd/conf:/etc/httpd/conf
+    - /code/hrinfo_aegir/config/hrinfo/etc/httpd/conf.d:/etc/httpd/conf.d
+    - /code/hrinfo_aegir/config/hrinfo/var/aegir:/var/aegir
+  links:
+    - mysql:mysql
+    - pgsql:pgsql
+  hostname: aegir.hrinfo.vm
