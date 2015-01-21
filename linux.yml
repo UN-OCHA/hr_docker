@@ -18,4 +18,10 @@ web:
     - ./code:/var/www/html
   links:
     - pgsql:pgsql
+    - solr3:solr
   hostname: www.hrinfo.vm
+solr3:
+  image: unocha/solr3
+  environment:
+    DNSDOCK_NAME: solr
+    DNSDOCK_IMAGE: hrinfo

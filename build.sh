@@ -29,3 +29,5 @@ docker exec -it hrdocker_web_1 mkdir -p /var/www/html/sites/www.hrinfo.vm/privat
 docker exec -it hrdocker_web_1 chown -R apache:apache /var/www/html/sites/www.hrinfo.vm/private/temp
 docker exec -it hrdocker_web_1 chown -R apache:apache /var/www/html/sites/www.hrinfo.vm/files
 docker exec -it hrdocker_web_1 sh -c 'cd /var/www/html/sites/www.hrinfo.vm; drush vset file_public_path sites/www.hrinfo.vm/files; drush vset file_private_path sites/www.hrinfo.vm/private; drush vset file_temporary_path sites/www.hrinfo.vm/private/temp; drush -y dis securelogin varnish memcache advagg; drush dl stage_file_proxy; drush -y en stage_file_proxy;drush vset stage_file_proxy_origin http://www.humanitarianresponse.info;drush vset stage_file_proxy_origin_dir sites/www.humanitarianresponse.info/files'
+cp solr.php ./code/sites/www.hrinfo.vm
+docker exec -it hrdocker_web_1 sh -c 'cd /var/www/html/sites/www.hrinfo.vm; drush scr solr.php; drush sapi-c; drush sapi-i default_node_index'
