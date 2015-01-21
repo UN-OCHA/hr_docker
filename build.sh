@@ -18,7 +18,7 @@ docker exec -it hrdocker_pgsql_1 sh -c 'echo -e "host\tall\t\tall\t172.17.42.0/2
 docker exec -it hrdocker_pgsql_1 /etc/init.d/postgresql-9.3 reload
 
 # Install site
-docker exec -it hrdocker_web_1 sh -c 'cd /var/www/html; drush site-install --sites-subdir=www.hrinfo.vm --db-url=pgsql://hrinfo:hrinfo@pgsql.hrinfo.vm:5432/hrinfo'
+docker exec -it hrdocker_web_1 sh -c 'cd /var/www/html; drush -y site-install --sites-subdir=www.hrinfo.vm --db-url=pgsql://hrinfo:hrinfo@pgsql.hrinfo.vm:5432/hrinfo'
 
 # Get latest database snapshot and install it
 cp hrinfo_snapshot.sh ./data/hrinfo/pgsql
