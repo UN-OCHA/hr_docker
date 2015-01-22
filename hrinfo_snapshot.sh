@@ -29,4 +29,7 @@ echo "Granting permission on all tables to $PGDB"
 psql -At -U $PGUSER -d $PGDB -c "SELECT 'GRANT ALL ON '||tablename||' TO $PGDB;' FROM pg_tables WHERE schemaname='public';" | psql -U $PGUSER -d $PGDB
 psql -At -U $PGUSER -d $PGDB -c "SELECT 'GRANT ALL ON '||c.relname||' TO $PGDB;' FROM pg_class c JOIN pg_namespace n ON (n.oid=c.relnamespace) WHERE c.relkind='S' AND n.nspname='public';" | psql -U $PGUSER -d $PGDB
 
-
+echo "Changing table owners to $PGDB"
+for tbl in `psql -U postgres -qAt -c "select tablename from pg_tables where schemaname = 'public';" $PGDB` ; do  psql -U postgres -c "alter table $tbl owner to $PGDB" $PGDB ; done
+for tbl in `psql -U postgres -qAt -c "select sequence_name from information_schema.sequences where sequence_schema = 'public';" $PGDB` ; do  psql -U postgres -c "alter table $tbl owner to $PGDB" $PGDB ; done
+for tbl in `psql -U postgres -qAt -c "select table_name from information_schema.views where table_schema = 'public';" $PGDB` ; do  psql -U postgres -c "alter table $tbl owner to $PGDB" $PGDB ; done
