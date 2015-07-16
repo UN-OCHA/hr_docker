@@ -7,7 +7,7 @@ pgsql:
     - data/hrinfo/pgsql:/var/lib/pgsql/9.3/data
   hostname: pgsql.hrinfo.vm
 web:
-  image: unocha/apache
+  build: .
   environment:
     DNSDOCK_NAME: www
     DNSDOCK_IMAGE: hrinfo

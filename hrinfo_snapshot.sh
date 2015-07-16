@@ -1,7 +1,7 @@
 #!/bin/sh
 
 POSTGIS_DIR=/usr/pgsql-9.3/share/contrib/postgis-2.1
-PGDB=hrinfo
+PGDB=humanitarianresp
 PGHOST=pgsql.hrinfo.vm
 PGUSER=postgres
 PASSWORD=$1
