@@ -1,16 +1,16 @@
 #!/bin/sh
 PASSWORD=`cat .password`
-DOCKER_PGSQL=hrinfo_pgsql_1
-DOCKER_WEB=hrinfo_web_1
+PWD=`pwd`
+BASE=`basename $PWD`
+DOCKER_PGSQL=${BASE}_pgsql_1
+DOCKER_WEB=${BASE}_web_1
 PGDB=humanitarianresp
-
-# Grab latest dev code snapshot
-git clone --branch=dev git@github.com:humanitarianresponse/site.git code
 
 # Create user and database
 docker exec -it $DOCKER_PGSQL psql -h "$POSTGRES_PORT_5432_TCP_ADDR" -p "$POSTGRES_PORT_5432_TCP_PORT" -U postgres -c "CREATE USER $PGDB WITH PASSWORD '$PGDB'"
 docker exec -it $DOCKER_PGSQL psql -h "$POSTGRES_PORT_5432_TCP_ADDR" -p "$POSTGRES_PORT_5432_TCP_PORT" -U postgres -c "CREATE DATABASE $PGDB"
 docker exec -it $DOCKER_PGSQL psql -h "$POSTGRES_PORT_5432_TCP_ADDR" -p "$POSTGRES_PORT_5432_TCP_PORT" -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE $PGDB TO $PGDB"
+docker exec -it $DOCKER_PGSQL psql -h "$POSTGRES_PORT_5432_TCP_ADDR" -p "$POSTGRES_PORT_5432_TCP_PORT" -U postgres -d $PGDB -c "CREATE SCHEMA drupal AUTHORIZATION $PGDB"
 
 # Allow connections to postgresql from 172.17.42.0/24
 # TODO This could probably be avoided by putting the configuration directly in the container
@@ -19,7 +19,7 @@ docker exec -it $DOCKER_PGSQL /etc/init.d/postgresql-9.3 reload
 
 # Install site
 docker exec -it $DOCKER_WEB mkdir /var/www/html/sites/www.hrinfo.vm
-docker exec -it $DOCKER_WEB sh -c 'cd /var/www/html; drush -y site-install --sites-subdir=www.hrinfo.vm --db-url=pgsql://$PGDB:$PGDB@pgsql:5432/$PGDB --db-prefix=drupal.'
+docker exec -it $DOCKER_WEB sh -c "cd /var/www/html; drush -y site-install --sites-subdir=www.hrinfo.vm --db-url=pgsql://$PGDB:$PGDB@pgsql:5432/$PGDB --db-prefix=drupal."
 
 # Get latest database snapshot and install it
 cp hrinfo_snapshot.sh ./data/hrinfo/pgsql
