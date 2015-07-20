@@ -19,6 +19,10 @@ RUN echo 'date.timezone = "America/New_York"' >> /etc/php.ini && \
 
 # Raise PHP memory_limit to 512 M
 RUN sed -i 's/memory_limit = .*/memory_limit = 512M/' /etc/php.ini
+# Raise max_execution_time to 60 seconds
+RUN sed -i 's/max_execution_time = .*/max_execution_time = 60/' /etc/php.ini
+# Raise apc shm_size to 256M
+RUN sed -i 's/apc.shm_size=.*/apc.shm_size=256M/' /etc/php.d/apc.ini
 
 VOLUME ["/etc/httpd/conf","/etc/httpd/conf.d","/etc/supervisord.d","/var/www/html"]
 
