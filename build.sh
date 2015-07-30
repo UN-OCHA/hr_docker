@@ -27,8 +27,8 @@ docker exec -it $DOCKER_PGSQL sh /var/lib/pgsql/9.3/data/hrinfo_snapshot.sh $PAS
 
 # Tweak the site
 docker exec -it $DOCKER_WEB mkdir -p /var/www/html/sites/www.hrinfo.vm/private/temp
-docker exec -it $DOCKER_WEB chown -R apache:apache /var/www/html/sites/www.hrinfo.vm/private/temp
-docker exec -it $DOCKER_WEB chown -R apache:apache /var/www/html/sites/www.hrinfo.vm/files
+docker exec -it $DOCKER_WEB chown -R www-data:www-data /var/www/html/sites/www.hrinfo.vm/private/temp
+docker exec -it $DOCKER_WEB chown -R www-data:www-data /var/www/html/sites/www.hrinfo.vm/files
 docker exec -it $DOCKER_WEB sh -c 'cd /var/www/html/sites/www.hrinfo.vm; drush vset file_public_path sites/www.hrinfo.vm/files; drush vset file_private_path sites/www.hrinfo.vm/private; drush vset file_temporary_path sites/www.hrinfo.vm/private/temp; drush vset hid_auth_login_enabled TRUE; drush -y dis securelogin varnish memcache advagg; drush -y en stage_file_proxy;drush vset stage_file_proxy_origin http://www.humanitarianresponse.info;drush vset stage_file_proxy_origin_dir sites/www.humanitarianresponse.info/files'
 cp solr.php ./code/sites/www.hrinfo.vm
 docker exec -it $DOCKER_WEB sh -c 'cd /var/www/html/sites/www.hrinfo.vm; drush scr solr.php; drush sapi-c; drush sapi-i default_node_index'
