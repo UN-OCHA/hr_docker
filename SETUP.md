@@ -62,6 +62,29 @@ To run these local Docker setups, you will need the following software installed
 1. Pull the phase2/dnsdock container
     - `docker pull phase2/dnsdock`
 
+#### Mac OS X
+1. Install Docker
+    - Unlike Linux, you can't run Docker natively in OS X. Instead, you use a Linux VM that will host Docker on your Mac. Follow the instructions as provided here(https://docs.docker.com/installation/mac/) to install Docker.
+2. Install Pip
+    - Check if you have Pip installed already `pip --version`.
+    - Download Pip 'wget https://bootstrap.pypa.io/get-pip.py`.
+    - Run `sudo python get-pip.py`.
+3. Fig has been replaced by Docker Compose and is now deprecated. If you set up your Mac using the instructions provided in the previous step, Docker Compose will already be in the system. If you are already using Boot2Docker, you are advised to upgrade to Docker Machine management using the instructions here(http://docs.docker.com/installation/mac/#migrate-from-boot2docker).
+4. Add your user to the Docker group.
+    - `sudo dseditgroup -o edit -a $USER -t user docker`
+5. Log out, then back in, in order to pick up your new group assignments.
+6. Set the DNS configuration for dnsdock, as well as known RFC-1918 address space.
+    - Run the Docker Quickstart Terminal if it not running already.
+    - ssh into the default machine by running `docker-machine ssh default`
+    - Edit the Docker config file by running `sudo vi /var/lib/boot2docker/profile`
+    - Add the line `OPTIONS=-bip=172.17.42.1/24 -dns=172.17.42.1`
+7. Restart the docker daemon.
+    - `docker-machine restart default`
+8. Log into the OCHA Docker Hub Account with the credentials furnished to you. You'll only need to do this once.
+    - `docker login`
+9. Pull the phase2/dnsdock container.
+    - `docker pull phase2/dnsdock`
+
 #### DNS Configuration Options
 
 ##### Method 1: libnss-resolver
@@ -70,7 +93,7 @@ libnss-resolver is an app that adds Mac-style /etc/resolver/$FQDN files to the L
 
 There are releases for Fedora 20, Ubuntu 12.04 and Ubuntu 14.04.
 
-1. Install libnss-resolver from https://github.com/azukiapp/libnss-resolver/releases 
+1. Install libnss-resolver from https://github.com/azukiapp/libnss-resolver/releases(Skip this step if you are using OS X)
 2. Set up .vm hostname resolution
     - `echo 'nameserver 172.17.42.1:53' | sudo tee /etc/resolver/vm`
 3. Run the dnsdock container
