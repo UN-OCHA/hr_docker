@@ -1,3 +1,14 @@
+varnish:
+  image: unocha/varnish
+  environment:
+    DNSDOCK_NAME: www
+    DNSDOCK_IMAGE: hrinfo
+  volumes:
+    - ./config/hrinfo/etc/varnish:/etc/varnish
+    - ./config/hrinfo/etc/sysconfig:/etc/sysconfig
+  hostname: www.hrinfo.vm
+  links:
+    - web:web
 pgsql:
   image: unocha/postgres93
   environment:
@@ -9,7 +20,7 @@ pgsql:
 web:
   build: .
   environment:
-    DNSDOCK_NAME: www
+    DNSDOCK_NAME: backend
     DNSDOCK_IMAGE: hrinfo
   volumes:
     - ./config/hrinfo/etc/httpd/conf:/etc/httpd/conf
@@ -19,7 +30,7 @@ web:
   links:
     - pgsql:pgsql
     - solr3:solr
-  hostname: www.hrinfo.vm
+  hostname: backend.hrinfo.vm
 solr3:
   image: unocha/solr3
   environment:
