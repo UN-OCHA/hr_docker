@@ -1,0 +1,5 @@
+[iusarchive]
+name=IUS Archive
+baseurl=http://dl.iuscommunity.org/pub/ius/archive/CentOS/6/x86_64/
+gpgcheck=0
+enabled=0
