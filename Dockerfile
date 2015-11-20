@@ -1,30 +1,49 @@
-FROM ubuntu:14.04
+FROM unocha/base
 
-# Install apache and php
-RUN apt-get update && \
-    apt-get -y install apache2 libapache2-mod-php5 php5-gd php5-mysql php5-pgsql php5-xdebug php5-curl drush vim
+ADD root /
 
-# Install mailcatcher
-RUN apt-get -y install build-essential ruby ruby-dev libsqlite3-dev && \
-    gem install mailcatcher
+ENV TERM vt100
 
-# Install supervisor
-RUN apt-get -y install supervisor
+# Webserver install
+RUN yum -y install http://yum.postgresql.org/9.3/redhat/rhel-6-x86_64/pgdg-centos93-9.3-1.noarch.rpm && \
+    yum -y install http://dl.iuscommunity.org/pub/ius/stable/CentOS/6/x86_64/ius-release-1.0-14.ius.centos6.noarch.rpm && \
+    yum -y update
+RUN yum -y install postgresql93 mysql httpd sudo rsync git postfix unzip patch python-pip shibboleth
+RUN yum -y install proj-4.8.0 geos-3.3.3 gdal-1.8.1
+RUN yum -y install --enablerepo=iusarchive php53u php53u-mysql php53u-cli php53u-gd php53u-process php53u-pear php53u-mbstring php53u-mcrypt php53u-devel php53u-process php53u-gd php53u-xml php53u-pdo php53u-mysql php53u-imap php53u-soap php53u-pecl-apc php53u-pecl-xhprof php53u-pgsql php53u-pecl-memcache php53u-pecl-geoip php53u-pecl-xdebug
+RUN yum -y install /opt/rpms/ImageMagick-6.8.9-10.x86_64.rpm /opt/rpms/ImageMagick-libs-6.8.9-10.x86_64.rpm /opt/rpms/ghostscript-9.14-7.el6.x86_64.rpm
+RUN pip install --upgrade pip
+RUN pip install meld3==1.0.1 supervisor supervisor-stdout
+
+# Set up PHP date handling and Drush 5.10.
+RUN cat /usr/share/zoneinfo/US/Eastern > /etc/localtime && \
+    pear channel-discover pear.drush.org && \
+    pear install drush/drush-5.10.0.0
+
+# Install PECL packages
+RUN yum -y install @"Development Tools"
+RUN pecl install uploadprogress XHProf-0.9.4
+RUN yum -y install mod_ssl cronolog
+
+RUN usermod -u 1000 apache
 
 # Allow overrides
-ADD conf/apache.conf /etc/apache2/sites-enabled/000-default.conf
-ADD conf/default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
-ADD conf/php.ini /etc/php5/apache2/php.ini
-COPY conf/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY config/hrinfo/etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf
+COPY config/hrinfo/etc/httpd/conf/magic /etc/httpd/conf/magic
+COPY config/hrinfo/etc/httpd/conf.d/php.conf /etc/httpd/conf.d/php.conf
+COPY config/hrinfo/etc/httpd/conf.d/ssl.conf /etc/httpd/conf.d/ssl.conf
+COPY conf/php.ini /etc/php.ini
+COPY config/hrinfo/etc/supervisord.d/supervisord.conf /etc/supervisord.conf
 
-# Enable apache modules
-RUN a2enmod rewrite headers ssl
-
-# Enable SSL virtual host
-RUN a2ensite default-ssl.conf
+# Configure xdebug
+RUN echo xdebug.remote_enable=on >> /etc/php.d/xdebug.ini; \
+    echo xdebug.remote_connect_back=on >> /etc/php.d/xdebug.ini; \
+    echo xdebug.remote_port=9000 >> /etc/php.d/xdebug.ini; \
+    echo xdebug.remote_handler=dbgp >> /etc/php.d/xdebug.ini; \
+    echo xdebug.remote_log=/tmp/php5-xdebug.log >> /etc/php.d/xdebug.ini; \
+    echo xdebug.max_nesting_level=10000 >> /etc/php.d/xdebug.ini;
 
 VOLUME ["/var/www/html"]
 
 EXPOSE 80 443 1080
 CMD ["/usr/bin/supervisord"]
-
