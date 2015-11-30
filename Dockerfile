@@ -33,6 +33,7 @@ COPY config/hrinfo/etc/httpd/conf/magic /etc/httpd/conf/magic
 COPY config/hrinfo/etc/httpd/conf.d/php.conf /etc/httpd/conf.d/php.conf
 COPY config/hrinfo/etc/httpd/conf.d/ssl.conf /etc/httpd/conf.d/ssl.conf
 COPY conf/php.ini /etc/php.ini
+COPY config/hrinfo/etc/php.d/uploadprogress.ini /etc/php.d/uploadprogress.ini
 COPY config/hrinfo/etc/supervisord.d/supervisord.conf /etc/supervisord.conf
 
 # Configure xdebug
