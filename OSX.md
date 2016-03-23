@@ -126,6 +126,19 @@ Error response from daemon: no such id: hrinfo_pgsql_1
 
 ## Useful Commands
 
+Getting the containers running after a reboot (commands pulled from `_devtools_vm` README, and this README):
+
+````
+~/Projects/_devtools_vm/bin/start.sh
+eval "$(~/Projects/_devtools_vm/bin/config.sh)"
+cd ~/hr_docker
+docker-compose build
+docker-compose up &
+./build.sh
+````
+
+Note: The `eval` statement should *not* be needed as this is also in my file `.bash_profile`; however, sometimes it's not properly sourced.
+
 To find a list of running containers (and their names), use:
 
 ````
