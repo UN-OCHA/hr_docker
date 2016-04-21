@@ -17,8 +17,13 @@ web:
     - pgsql:pgsql
     - solr3:solr
     - mailhog:mailhog
+    - redis:redis
   ports:
     - 8085:80
+redis:
+  image: teodorescuserban/redis:latest
+  ports:
+    - 63790:6379
 solr3:
   image: unocha/solr3
   environment:
