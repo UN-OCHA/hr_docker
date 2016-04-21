@@ -15,19 +15,29 @@ RUN yum -y install /opt/rpms/ImageMagick-6.8.9-10.x86_64.rpm /opt/rpms/ImageMagi
 RUN pip install --upgrade pip
 RUN pip install meld3==1.0.1 supervisor supervisor-stdout
 
-# Set up PHP date handling and Drush 5.10.
-RUN cat /usr/share/zoneinfo/US/Eastern > /etc/localtime && \
-    pear channel-discover pear.drush.org && \
-    pear install drush/drush-5.10.0.0
+# Add the user for OSX's Apache (typically _www or www-data)
+# RUN usermod -u 1000 _www
+
+# Set up PHP date handling
+RUN cat /usr/share/zoneinfo/US/Eastern > /etc/localtime
+
+# Setup Drush using Composer
+RUN echo "allow_url_fopen = On" >> /etc/php.ini
+RUN curl -sS https://getcomposer.org/installer | php
+RUN mv composer.phar /usr/local/bin/composer
+ENV PATH "/root/.composer/vendor/bin:$PATH"
+RUN composer global require drush/drush:6.6.0
 
 # Install PECL packages
 RUN yum -y install @"Development Tools"
 RUN pecl install uploadprogress XHProf-0.9.4
 RUN yum -y install mod_ssl cronolog
 
-RUN usermod -u 1000 apache
-
 # Allow overrides
+RUN usermod -u 1000 apache
+RUN usermod -a -G 50 apache
+RUN chown -R apache:apache /var/www
+
 COPY config/hrinfo/etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf
 COPY config/hrinfo/etc/httpd/conf/magic /etc/httpd/conf/magic
 COPY config/hrinfo/etc/httpd/conf.d/php.conf /etc/httpd/conf.d/php.conf
