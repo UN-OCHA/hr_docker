@@ -4,7 +4,7 @@ pgsql:
     DNSDOCK_NAME: pgsql
     DNSDOCK_IMAGE: hrinfo
   volumes:
-    - /data/hrinfo/pgsql:/var/lib/pgsql/9.3/data
+    - ./data/hrinfo/pgsql:/var/lib/pgsql/9.3/data
     - ./hrinfo_snapshot.sh:/tmp/hrinfo_snapshot.sh
 web:
   build: .
@@ -17,6 +17,8 @@ web:
     - pgsql:pgsql
     - solr3:solr
     - mailhog:mailhog
+  ports:
+    - 8085:80
 solr3:
   image: unocha/solr3
   environment:
