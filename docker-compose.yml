@@ -4,19 +4,35 @@ pgsql:
     DNSDOCK_NAME: pgsql
     DNSDOCK_IMAGE: hrinfo
   volumes:
-    - /data/hrinfo/pgsql:/var/lib/pgsql/9.3/data
     - ./hrinfo_snapshot.sh:/tmp/hrinfo_snapshot.sh
 web:
-  build: .
+  image: teodorescuserban/alpine-nginx:testing
   environment:
     DNSDOCK_NAME: www
     DNSDOCK_IMAGE: hrinfo
   volumes:
-    - ./code:/var/www/html:rw
+    - ./nginx:/etc/nginx/conf.d
+  volumes_from:
+    - html
   links:
+    - fpm:fpm
     - pgsql:pgsql
     - solr3:solr
     - mailhog:mailhog
+fpm:
+  image: teodorescuserban/alpine-fpm
+  environment:
+    DNSDOCK_NAME: fpm
+    DNSDOCK_IMAGE: hrinfo
+  volumes_from:
+    - html
+  links:
+    - pgsql:pgsql
+html:
+  build: .
+  dockerfile: html/Dockerfile
+  volumes:
+    - /var/www/html
 solr3:
   image: unocha/solr3
   environment:
