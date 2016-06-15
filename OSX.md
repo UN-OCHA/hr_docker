@@ -30,7 +30,7 @@ Note: Make sure that the hr_docker repo (this one) is cloned somewhere in your
     DOCKER_PGSQL and DOCKER_WEB  to use `hrinfo` instead of `${BASE}`
 
 4. Create a .password file in which you will put the password of snapshots.humanitarianresponse.info
-5. Clone the code in /code: git clone --branch=dev git@github.com:humanitarianresponse/site.git code
+5. Clone the code in /htdocs: git clone --branch=dev git@github.com:humanitarianresponse/site.git htdocs
 6. Build the docker containers with Docker compose: `docker-compose build` from the hr_docker folder.
 7. Start the docker containers: `docker-compose up`
 8. Run `./build.sh`. This will download the database snapshot and install it in your docker container.

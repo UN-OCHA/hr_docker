@@ -1,38 +1,15 @@
+html:
+  build: .
+  dockerfile: config/html/Dockerfile
+  volumes:
+    - /srv/www/html
 pgsql:
   image: unocha/postgres93
   environment:
     DNSDOCK_NAME: pgsql
     DNSDOCK_IMAGE: hrinfo
   volumes:
-    - ./hrinfo_snapshot.sh:/tmp/hrinfo_snapshot.sh
-web:
-  image: teodorescuserban/alpine-nginx:testing
-  environment:
-    DNSDOCK_NAME: www
-    DNSDOCK_IMAGE: hrinfo
-  volumes:
-    - ./nginx:/etc/nginx/conf.d
-  volumes_from:
-    - html
-  links:
-    - fpm:fpm
-    - pgsql:pgsql
-    - solr3:solr
-    - mailhog:mailhog
-fpm:
-  image: teodorescuserban/alpine-fpm
-  environment:
-    DNSDOCK_NAME: fpm
-    DNSDOCK_IMAGE: hrinfo
-  volumes_from:
-    - html
-  links:
-    - pgsql:pgsql
-html:
-  build: .
-  dockerfile: html/Dockerfile
-  volumes:
-    - /var/www/html
+    - ./config/hrinfo_snapshot.sh:/tmp/hrinfo_snapshot.sh:ro
 solr3:
   image: unocha/solr3
   environment:
@@ -43,3 +20,26 @@ mailhog:
   ports:
     - 8025:8025
     - 1025:1025
+fpm:
+# build: .
+  image: unocha/alpine-base-php-fpm
+  environment:
+    DNSDOCK_NAME: fpm
+    DNSDOCK_IMAGE: hrinfo
+  links:
+    - pgsql:pgsql
+    - solr3:solr
+    - mailhog:mailhog
+  volumes_from:
+    - html
+web:
+  image: unocha/alpine-base-nginx
+  environment:
+    DNSDOCK_NAME: www
+    DNSDOCK_IMAGE: hrinfo
+  links:
+    - fpm:fpm
+  volumes:
+    - ./config/nginx:/etc/nginx/conf.d:ro
+  volumes_from:
+    - html

@@ -66,7 +66,7 @@ SH
 SH
 
     config.vm.provision "shell", inline: <<SH
-    cd /var/www/site/docroot
+    cd /srv/www/htdocs
     #fig build
     #fig up -d
 SH
