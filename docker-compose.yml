@@ -15,6 +15,13 @@ solr3:
   environment:
     DNSDOCK_NAME: solr
     DNSDOCK_IMAGE: hrinfo
+redis:
+  image: teodorescuserban/redis:latest
+  environment:
+    DNSDOCK_NAME: redis
+    DNSDOCK_IMAGE: hrinfo
+  ports:
+    - "6379:6379"
 mailhog:
   image: mailhog/mailhog
   ports:
@@ -22,7 +29,7 @@ mailhog:
     - 1025:1025
 fpm:
 # build: .
-  image: unocha/alpine-base-php-fpm
+  image: unocha/alpine-php-fpm-drupal7
   environment:
     DNSDOCK_NAME: fpm
     DNSDOCK_IMAGE: hrinfo
@@ -33,7 +40,7 @@ fpm:
   volumes_from:
     - html
 web:
-  image: unocha/alpine-base-nginx
+  image: unocha/alpine-base-nginx:latest
   environment:
     DNSDOCK_NAME: www
     DNSDOCK_IMAGE: hrinfo
