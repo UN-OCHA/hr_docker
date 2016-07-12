@@ -39,6 +39,8 @@ fpm:
     - mailhog:mailhog
   volumes_from:
     - html
+  volumes:
+    - ./config/fpm/drushrc.php:/etc/drush/drushrc.php:ro
 web:
   image: unocha/alpine-base-nginx:latest
   environment:
