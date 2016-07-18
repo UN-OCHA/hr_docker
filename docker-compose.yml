@@ -1,29 +1,52 @@
+html:
+  build: .
+  dockerfile: config/html/Dockerfile
+  volumes:
+    - /srv/www/html
 pgsql:
   image: unocha/postgres93
   environment:
     DNSDOCK_NAME: pgsql
     DNSDOCK_IMAGE: hrinfo
   volumes:
-    - /data/hrinfo/pgsql:/var/lib/pgsql/9.3/data
-    - ./hrinfo_snapshot.sh:/tmp/hrinfo_snapshot.sh
-web:
-  build: .
-  environment:
-    DNSDOCK_NAME: www
-    DNSDOCK_IMAGE: hrinfo
-  volumes:
-    - ./code:/var/www/html:rw
-  links:
-    - pgsql:pgsql
-    - solr3:solr
-    - mailhog:mailhog
+    - ./config/hrinfo_snapshot.sh:/tmp/hrinfo_snapshot.sh:ro
 solr3:
   image: unocha/solr3
   environment:
     DNSDOCK_NAME: solr
     DNSDOCK_IMAGE: hrinfo
+redis:
+  image: teodorescuserban/redis:latest
+  environment:
+    DNSDOCK_NAME: redis
+    DNSDOCK_IMAGE: hrinfo
+  ports:
+    - "6379:6379"
 mailhog:
   image: mailhog/mailhog
   ports:
     - 8025:8025
     - 1025:1025
+fpm:
+# build: .
+  image: unocha/alpine-php-fpm-drupal7
+  environment:
+    DNSDOCK_NAME: fpm
+    DNSDOCK_IMAGE: hrinfo
+  links:
+    - pgsql:pgsql
+    - solr3:solr
+    - mailhog:mailhog
+  volumes_from:
+    - html
+web:
+  image: unocha/alpine-base-nginx:latest
+  environment:
+    DNSDOCK_NAME: www
+    DNSDOCK_IMAGE: hrinfo
+  links:
+    - fpm:fpm
+  volumes:
+    - ./config/nginx:/etc/nginx/conf.d:ro
+  volumes_from:
+    - html
