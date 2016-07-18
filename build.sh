@@ -2,7 +2,6 @@
 PASSWORD=`cat .password`
 PWD=`pwd`
 BASE=`basename $PWD`
-BASE='hrdocker'
 DOCKER_PGSQL=${BASE}_pgsql_1
 DOCKER_WEB=${BASE}_web_1
 DOCKER_FPM=${BASE}_fpm_1
