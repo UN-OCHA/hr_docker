@@ -40,7 +40,7 @@ fpm:
   volumes_from:
     - html
   volumes:
-    - ./config/fpm/drushrc.php:/etc/drush/drushrc.php:ro
+    - ./config/drush:/etc/drush:ro
 web:
   image: unocha/alpine-base-nginx:latest
   environment:
